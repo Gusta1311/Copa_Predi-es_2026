@@ -105,6 +105,6 @@ copa2026/
 
 ## Créditos
 
-Desenvolvido por **Gustavo Carvalho** com assistência estatística do Claude (Anthropic).
+Desenvolvido por **Gustavo Carvalho**.
 
 Dados de referência: eloratings.net, ranking FIFA junho 2026, pesquisa pública de elencos e lesões.
