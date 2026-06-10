@@ -166,16 +166,22 @@ def get_recent_matches(team_name, n=10):
     if not tid:
         return None
 
-    data, _ = api_get("fixtures", {"team": tid, "last": n})
-    if not data:
-        return None
-
     matches = []
-    for fixture in data:
-        parsed = parse_fixture(fixture, tid)
-        if parsed:
-            matches.append(parsed)
+    for season in [2026, 2025, 2024]:
+        data, _ = api_get("fixtures", {
+            "team": tid,
+            "season": season,
+            "status": "FT"
+        })
+        if data:
+            for fixture in data:
+                parsed = parse_fixture(fixture, tid)
+                if parsed:
+                    matches.append(parsed)
+        if len(matches) >= n:
+            break
 
+    matches = sorted(matches, key=lambda x: x["date"], reverse=True)[:n]
     return matches if matches else None
 
 
@@ -187,7 +193,8 @@ def get_h2h(team_a, team_b, n=8):
 
     data, _ = api_get("fixtures/headtohead", {
         "h2h": f"{tid_a}-{tid_b}",
-        "last": n,
+        "season": 2026,
+        "status": "FT"
     })
     if not data:
         return None
