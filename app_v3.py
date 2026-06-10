@@ -43,6 +43,51 @@ FOOTBALL_API_KEY=sua_chave_aqui
 ```
         """)
 
+if HAS_API:
+    with st.expander("🔧 Diagnóstico da API"):
+        if st.button("Rodar diagnóstico"):
+            from api_client_v2 import (
+                get_team_id, get_headers, get_recent_matches,
+                get_wc2026_results, API_BASE
+            )
+            import requests
+
+            st.write("**IDs dos times:**")
+            teams_test = ["Brasil", "México", "França", "Argentina", "África do Sul"]
+            for t in teams_test:
+                tid = get_team_id(t)
+                st.write(f"- {t}: `{tid}`" + (" ✅" if tid else " ❌ NÃO ENCONTRADO"))
+
+            st.write("**Teste de requisição (Brasil):**")
+            try:
+                headers = get_headers()
+                resp = requests.get(
+                    f"{API_BASE}/fixtures",
+                    headers=headers,
+                    params={"team": 6, "last": 3},
+                    timeout=10
+                )
+                data = resp.json()
+                remaining = resp.headers.get("x-ratelimit-requests-remaining", "N/A")
+                st.write(f"- Status HTTP: `{resp.status_code}`")
+                st.write(f"- Erros: `{data.get('errors')}`")
+                st.write(f"- Jogos retornados: `{len(data.get('response', []))}`")
+                st.write(f"- Requisições restantes hoje: `{remaining}`")
+                if data.get("response"):
+                    fix = data["response"][0]
+                    st.write(f"- Último jogo: `{fix['teams']['home']['name']} x {fix['teams']['away']['name']}`")
+            except Exception as e:
+                st.error(f"Erro: {e}")
+
+            st.write("**Teste forma recente (Brasil):**")
+            matches = get_recent_matches("Brasil")
+            if matches:
+                st.success(f"✅ {len(matches)} jogos encontrados")
+                for m in matches[:3]:
+                    st.write(f"- {m['date'][:10]} | {m['gf']}x{m['ga']} | {m['league']}")
+            else:
+                st.error("❌ Nenhum jogo retornado")
+
 st.divider()
 
 ALL_TEAMS = sorted(ELO_RATINGS.keys())
