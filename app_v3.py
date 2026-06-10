@@ -88,6 +88,21 @@ if HAS_API:
             else:
                 st.error("❌ Nenhum jogo retornado")
 
+            st.write("**Teste por season (Brasil):**")
+            import requests as req2
+            headers2 = get_headers()
+            for season in [2026, 2025, 2024]:
+                r = req2.get(
+                    f"{API_BASE}/fixtures",
+                    headers=headers2,
+                    params={"team": 6, "season": season, "status": "FT"},
+                    timeout=10
+                )
+                d = r.json()
+                n_games = len(d.get("response", []))
+                erros = d.get("errors")
+                st.write(f"- Season {season}: `{n_games}` jogos | erros: `{erros}`")
+
 st.divider()
 
 ALL_TEAMS = sorted(ELO_RATINGS.keys())
