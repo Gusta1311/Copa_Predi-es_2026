@@ -46,6 +46,7 @@ COMPETITION_WEIGHTS = {
 }
 
 WORLD_CUP_2026_LEAGUE_ID = 1
+WORLD_CUP_2026_LEAGUE_ID_ALT = 777
 
 
 def get_api_key():
@@ -165,7 +166,7 @@ def get_recent_matches(team_name, n=10):
     if not tid:
         return None
 
-    data, _ = api_get("fixtures", {"team": tid, "last": n, "type": "International"})
+    data, _ = api_get("fixtures", {"team": tid, "last": n})
     if not data:
         return None
 
@@ -206,6 +207,12 @@ def get_wc2026_results():
         "season": 2026,
         "status": "FT"
     })
+    if not data:
+        data, _ = api_get("fixtures", {
+            "league": WORLD_CUP_2026_LEAGUE_ID_ALT,
+            "season": 2026,
+            "status": "FT"
+        })
     if not data:
         return []
 
